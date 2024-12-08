@@ -14,7 +14,7 @@ export function PageTitle() {
     "/feedback": "フィードバック",
     // 必要に応じて他のパスとタイトルを追加
   };
-  const pageTitle = titleMap[pathname] || "ダッシュボード";
+  const pageTitle = titleMap[pathname] || pathname;
 
   return <h1 className="mb-2 font-semibold">{pageTitle}</h1>;
 } 

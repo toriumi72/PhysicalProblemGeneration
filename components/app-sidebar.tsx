@@ -27,132 +27,73 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar"
-
-const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  navMain: [
-    {
-      title: "ダッシュボード",
-      url: "/dashboard",
-      icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "問題生成",
-      url: "/generate",
-      icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "問題一覧",
-      url: "/problems",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
-    },
-    {
-      title: "設定",
-      url: "/settings",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  navSecondary: [
-    {
-      title: "サポート",
-      url: "/support",
-      icon: LifeBuoy,
-    },
-    {
-      title: "フィードバック",
-      url: "/feedback",
-      icon: Send,
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
-}
+import { createClient } from "@/utils/supabase/client"
+import { useEffect, useState } from "react"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const user = {
+    name: "userName",
+    email: "userEmail",
+    avatar: "/avatars/default.jpg",
+  }
+
+  const data = {
+    navMain: [
+      {
+        title: "ダッシュボード",
+        url: "/dashboard",
+        icon: SquareTerminal,
+        isActive: true,
+        items: [
+          { title: "History", url: "#" },
+          { title: "Starred", url: "#" },
+          { title: "Settings", url: "#" },
+        ],
+      },
+      {
+        title: "問題生成",
+        url: "/generate",
+        icon: Bot,
+        items: [
+          { title: "Genesis", url: "#" },
+          { title: "Explorer", url: "#" },
+          { title: "Quantum", url: "#" },
+        ],
+      },
+      {
+        title: "問題一覧",
+        url: "/problems",
+        icon: BookOpen,
+        items: [
+          { title: "Introduction", url: "#" },
+          { title: "Get Started", url: "#" },
+          { title: "Tutorials", url: "#" },
+          { title: "Changelog", url: "#" },
+        ],
+      },
+      {
+        title: "設定",
+        url: "/settings",
+        icon: Settings2,
+        items: [
+          { title: "General", url: "#" },
+          { title: "Team", url: "#" },
+          { title: "Billing", url: "#" },
+          { title: "Limits", url: "#" },
+        ],
+      },
+    ],
+    navSecondary: [
+      { title: "サポート", url: "/support", icon: LifeBuoy },
+      { title: "フィードバック", url: "/feedback", icon: Send },
+    ],
+    projects: [
+      { name: "Design Engineering", url: "#", icon: Frame },
+      { name: "Sales & Marketing", url: "#", icon: PieChart },
+      { name: "Travel", url: "#", icon: Map },
+    ],
+  }
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
@@ -164,8 +105,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <Command className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-semibold">PhysicGen</span>
+                  <span className="truncate text-xs">v1.0.0</span>
                 </div>
               </a>
             </SidebarMenuButton>
@@ -178,7 +119,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+      <NavUser user={user} />
       </SidebarFooter>
     </Sidebar>
   )

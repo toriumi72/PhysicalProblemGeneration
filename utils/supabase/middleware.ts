@@ -1,6 +1,10 @@
 import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
+export async function middleware(request: NextRequest) {
+  return await updateSession(request);
+}
+
 export const updateSession = async (request: NextRequest) => {
   // This `try/catch` block is only here for the interactive tutorial.
   // Feel free to remove once you have Supabase connected.
@@ -40,7 +44,14 @@ export const updateSession = async (request: NextRequest) => {
     const user = await supabase.auth.getUser();
 
     // protected routes
-    if (request.nextUrl.pathname.startsWith("/protected") && user.error) {
+    if (
+      (request.nextUrl.pathname.startsWith("/protected") ||
+      request.nextUrl.pathname.startsWith("/dashboard") ||
+      request.nextUrl.pathname.startsWith("/problems") ||
+      request.nextUrl.pathname.startsWith("/settings") ||
+      request.nextUrl.pathname.startsWith("/feedback") ||
+      request.nextUrl.pathname.startsWith("/generate")) && user.error
+    ) {
       return NextResponse.redirect(new URL("/sign-in", request.url));
     }
 
