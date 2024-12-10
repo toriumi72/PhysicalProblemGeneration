@@ -1,0 +1,296 @@
+version: "1.0.0"
+
+database:
+  schemas:
+    public:
+      tables:
+        subjects:
+          description: "教科マスタ"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: name
+              type: TEXT
+              not_null: true
+              unique: true
+              comment: "例: 物理, 数学"
+            - name: description
+              type: TEXT
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        categories:
+          description: "大分類マスタ (例: 力学, 電磁気, 波動, 熱学)"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: subject_id
+              type: BIGINT
+              references: "public.subjects(id)"
+              on_delete: "CASCADE"
+            - name: name
+              type: TEXT
+              not_null: true
+              comment: "例: 力学"
+            - name: description
+              type: TEXT
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+          constraints:
+            - type: unique
+              columns: [subject_id, name]
+
+        units:
+          description: "単元マスタ (例: 力学内の運動の表し方, 力とその働き等)"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: category_id
+              type: BIGINT
+              references: "public.categories(id)"
+              on_delete: "CASCADE"
+            - name: name
+              type: TEXT
+              not_null: true
+            - name: description
+              type: TEXT
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+          constraints:
+            - type: unique
+              columns: [category_id, name]
+
+        difficulties:
+          description: "難易度マスタ (例: 初級, 中級, 上級)"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: level_name
+              type: TEXT
+              not_null: true
+              unique: true
+            - name: parameters
+              type: JSONB
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        users:
+          description: "ユーザプロフィール拡張 (auth.usersとの1対1対応)"
+          columns:
+            - name: id
+              type: UUID
+              primary_key: true
+              references: "auth.users(id)"
+            - name: display_name
+              type: TEXT
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        user_settings:
+          description: "ユーザ毎設定 (デフォルト難易度、好みの単元など)"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: user_id
+              type: UUID
+              references: "public.users(id)"
+              on_delete: "CASCADE"
+            - name: default_difficulty_id
+              type: BIGINT
+              references: "public.difficulties(id)"
+            - name: preferred_units
+              type: BIGINT[]
+              references: "public.units(id)"
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        problem_generation_requests:
+          description: "問題生成要求ログ (LLMへのリクエスト記録)"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: user_id
+              type: UUID
+              references: "public.users(id)"
+              on_delete: "SET NULL"
+            - name: requested_units
+              type: BIGINT[]
+              references: "public.units(id)"
+            - name: difficulty_id
+              type: BIGINT
+              references: "public.difficulties(id)"
+            - name: question_count
+              type: INT
+              not_null: true
+            - name: request_params
+              type: JSONB
+            - name: response_metadata
+              type: JSONB
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        problems:
+          description: "生成された問題本体"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: generation_request_id
+              type: BIGINT
+              references: "public.problem_generation_requests(id)"
+              on_delete: "SET NULL"
+            - name: unit_id
+              type: BIGINT
+              references: "public.units(id)"
+            - name: difficulty_id
+              type: BIGINT
+              references: "public.difficulties(id)"
+            - name: question_text
+              type: TEXT
+              not_null: true
+            - name: answer_text
+              type: TEXT
+              not_null: true
+            - name: hints_count
+              type: INT
+              not_null: true
+              default: 0
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        problem_hints:
+          description: "問題ヒント管理テーブル"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: problem_id
+              type: BIGINT
+              references: "public.problems(id)"
+              on_delete: "CASCADE"
+            - name: hint_order
+              type: INT
+              not_null: true
+            - name: hint_text
+              type: TEXT
+              not_null: true
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+          constraints:
+            - type: unique
+              columns: [problem_id, hint_order]
+
+        user_problem_attempts:
+          description: "ユーザの解答記録"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: user_id
+              type: UUID
+              references: "public.users(id)"
+              on_delete: "CASCADE"
+            - name: problem_id
+              type: BIGINT
+              references: "public.problems(id)"
+              on_delete: "CASCADE"
+            - name: user_evaluation
+              type: TEXT
+            - name: user_answer
+              type: TEXT
+            - name: attempted_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        dashboard_metrics:
+          description: "ダッシュボード用集計テーブル"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: user_id
+              type: UUID
+              references: "public.users(id)"
+              on_delete: "CASCADE"
+            - name: metric_date
+              type: DATE
+              not_null: true
+            - name: total_problems
+              type: INT
+              default: 0
+            - name: correct_rate
+              type: NUMERIC(5,2)
+            - name: difficulty_breakdown
+              type: JSONB
+            - name: trend_data
+              type: JSONB
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+            - name: updated_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
+
+        api_logs:
+          description: "APIログ (LLM呼び出しなど)"
+          columns:
+            - name: id
+              type: BIGSERIAL
+              primary_key: true
+            - name: user_id
+              type: UUID
+              references: "public.users(id)"
+              on_delete: "SET NULL"
+            - name: endpoint
+              type: TEXT
+            - name: request_data
+              type: JSONB
+            - name: response_data
+              type: JSONB
+            - name: error_message
+              type: TEXT
+            - name: created_at
+              type: TIMESTAMP WITH TIME ZONE
+              default: "NOW()"
