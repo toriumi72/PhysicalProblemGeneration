@@ -1,5 +1,10 @@
-export default function Page() {
+import Generator from './components/generate'
+
+export default function GeneratePage() {
+  
   return (
-    <h1>Hello generate</h1>
+    <>
+      <Generator />
+    </>
   )
 }
