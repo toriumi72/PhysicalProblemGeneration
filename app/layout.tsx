@@ -1,8 +1,9 @@
 import { GeistSans } from "geist/font/sans";
 import { Toaster } from "@/components/ui/sonner"
 import { createClient } from "@/utils/supabase/server";
+import { useEffect, useState } from "react";
 import { ReactNode } from 'react'
-import { User } from '@/contexts/UserContext'
+import { UserContext, User } from '@/contexts/UserContext'
 import UserProvider from '@/components/providers/UserProvider'
 
 type RootLayoutProps = {

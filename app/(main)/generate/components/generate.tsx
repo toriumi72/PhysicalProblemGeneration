@@ -18,6 +18,8 @@ import { Loader2 } from "lucide-react"
 import { addProblem } from '@/features/supabase/problems'
 import { createClient } from '@/utils/supabase/client'
 import { useUser } from '@/contexts/UserContext'
+import { createProblemGenerationRequest, saveProblemGenerationRequestUnit } from '@/features/supabase/problemGenerationRequests'
+
 interface Unit {
   id: number
   name: string
@@ -64,38 +66,10 @@ export default function ProblemGenerator({ units }: { units: Unit[] | null }) {
         const data = await res.json();
 
         // problem_generation_requestsにデータを挿入
-        const supabase = createClient();
-        const { data: requestData, error: requestError } = await supabase
-          .from('problem_generation_requests')
-          .insert({
-            user_id: user?.id,
-            difficulty_id: 1,
-            question_count: 1,
-            request_params: { unit: currentUnit },
-            response_metadata: data
-          })
-          .select()
-          .single();
-
-        if (requestError) {
-          console.error('リクエスト保存エラー:', requestError);
-          reject(new Error('リクエストの保存に失敗しました'));
-          return;
-        }
+        const requestData = await createProblemGenerationRequest(user, currentUnit, data);
 
         // problem_generation_request_unitsに単元情報を挿入
-        const { error: unitError } = await supabase
-          .from('problem_generation_request_units')
-          .insert({
-            problem_generation_request_id: requestData.id,
-            unit_id: currentUnit.id
-          });
-
-        if (unitError) {
-          console.error('単元紐付けエラー:', unitError);
-          reject(new Error('単元の紐付けに失敗しました'));
-          return;
-        }
+        await saveProblemGenerationRequestUnit(requestData.id, currentUnit.id);
         
         // problemsテーブルに問題データを挿入
         const problemData: Database['public']['Tables']['problems']['Insert'] = {
