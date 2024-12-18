@@ -1,10 +1,14 @@
 import Generator from './components/generate'
+import { getUnits } from '@/features/supabase/units'
 
-export default function GeneratePage() {
-  
+export default async function GeneratePage() {
+  const data = await getUnits()
+
   return (
     <>
-      <Generator />
+      <div className="max-w-xl mx-auto">
+        <Generator units={data} />
+      </div>
     </>
   )
 }

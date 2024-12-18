@@ -83,3 +83,9 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* katexの数式を改行できるようにする（力技で） */
+.katex .base {
+  white-space: normal !important;
+  width: 100% !important;
+}

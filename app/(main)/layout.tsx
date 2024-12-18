@@ -51,11 +51,11 @@ export default function Layout({
       <AppSidebar />
       <SidebarInset>
         <Header />
-        <main className="p-4 pt-16">
+        <div className="p-4 pt-16">
           <PageTitle />
           {children}
           <div className="min-h-[100vh] flex-1 rounded-xl bg-muted/50 md:min-h-min" />
-        </main>
+        </div>
       </SidebarInset>
     </SidebarProvider>
   );

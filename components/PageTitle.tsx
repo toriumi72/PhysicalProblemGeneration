@@ -14,7 +14,13 @@ export function PageTitle() {
     "/feedback": "フィードバック",
     // 必要に応じて他のパスとタイトルを追加
   };
+
+  // /generate/[id] のようなパスに対応
+  if (pathname.match(/^\/generate\/[^/]+$/)) {
+    return <h1 className="mb-2 font-semibold">問題</h1>;
+  }
+
   const pageTitle = titleMap[pathname] || pathname;
 
   return <h1 className="mb-2 font-semibold">{pageTitle}</h1>;
-} 
+}

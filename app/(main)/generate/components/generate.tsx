@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Select,
   SelectContent,
@@ -10,83 +10,108 @@ import {
 } from '@/components/ui/select'
 import { Slider } from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
+import { Database } from '@/types/supabaseTypes'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { toast } from "sonner"
+import { Loader2 } from "lucide-react"
 
-export default function ProblemGenerator() {
-  const [unit, setUnit] = useState('')
-  const [responseText, setResponseText] = useState('')
 
-  const units = {
-    mechanics: ['運動量', 'エネルギー保存', '力学的振動'],
-  }
+interface Unit {
+  id: number
+  name: string
+  description: string
+}
+
+export default function ProblemGenerator({ units }: { units: Unit[] | null }) {
+  const [currentUnit, setCurrentUnit] = useState({
+    id: units?.[0]?.id || 0,
+    name: units?.[0]?.name || '',
+    description: units?.[0]?.description || '',
+  })
+
+  const [response, setResponse] = useState({
+    id: '',
+    answer: '',
+  })
+
+  const [isLoading, setIsLoading] = useState(false)
+
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setResponseText(''); // レスポンステキストをリセット
+    setIsLoading(true);
+    setResponse({ id: '', answer: '' });
 
-    try {
-      const res = await fetch('/generate/api/dify', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ units }),
-      });
+    const fetchPromise = new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch('/generate/api/dify', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ unit: currentUnit }),
+        });
 
-      if (!res.body) {
-        setResponseText('ストリーミングデータがありません');
-        return;
-      }
-
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let done = false;
-      let accumulatedText = '';
-
-      while (!done) {
-        const { value, done: doneReading } = await reader.read();
-        done = doneReading;
-        if (value) {
-          const chunk = decoder.decode(value, { stream: true });
-          // ストリームを行単位で分割
-          const lines = chunk.split('\n').filter(line => line.trim() !== '');
-          lines.forEach(line => {
-            try {
-              const data = JSON.parse(line.replace(/^data: /, ''));
-              if (data.event === 'message' && data.answer) {
-                accumulatedText += data.answer;
-                setResponseText(accumulatedText);
-              } else if (data.event === 'message_end') {
-                // ストリーミング終了時の処理（必要に応じて）
-                console.log('ストリーミングが終了しました');
-              }
-            } catch (err) {
-              console.error('JSON解析エラー:', err);
-            }
-          });
+        if (!res.ok) {
+          reject(new Error('サーバーエラーが発生しました'));
+          return;
         }
+
+        const data = await res.json();
+        resolve(data);
+        
+        setResponse({
+          id: data.id,
+          answer: data.answer,
+        });
+
+        router.push(`/generate/${data.id}?id=${data.id}&answer=${data.answer}`);
+
+      } catch (error) {
+        reject(error);
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error) {
-      setResponseText('サーバーエラーが発生しました');
-    }
+    });
+
+    toast.promise(fetchPromise, {
+      loading: '問題を生成中...',
+      success: () => '問題が生成されました。',
+      error: 'エラーが発生しました。'
+    });
   };
 
   return (
-    <div className="max-w-xl mx-auto px-4 py-16 font-light">
+    <>
       <h1 className="text-4xl font-extralight tracking-tight mb-12 text-center">
         物理学の問題を生成
       </h1>
       <div className="space-y-6">
 
-        <Select value={unit} onValueChange={setUnit}>
+        <Select 
+          value={currentUnit.name} 
+          onValueChange={(value) => {
+            const selectedUnit = units?.find(u => u.name === value);
+            if (selectedUnit) {
+              setCurrentUnit({
+                id: selectedUnit.id,
+                name: selectedUnit.name,
+                description: selectedUnit.description,
+              });
+            }
+          }}
+        >
           <SelectTrigger className="w-full h-12 text-sm border-gray-300 focus:ring-gray-400 focus:border-gray-400">
             <SelectValue placeholder="単元を選択" />
           </SelectTrigger>
           <SelectContent>
-            {units.mechanics?.map((unitName) => (
+            {units?.map((unit) => (
               <SelectItem 
-                key={unitName} 
-                value={unitName}
+                key={unit.name} 
+                value={unit.name}
                 className="text-sm"
               >
-                {unitName}
+                {unit.name}
               </SelectItem>
             ))}
           </SelectContent>
@@ -94,21 +119,29 @@ export default function ProblemGenerator() {
 
         <Button
           onClick={handleSubmit}
-          disabled={ !unit }
-          className="w-full bg-black hover:bg-gray-800 text-white h-12 text-sm font-normal tracking-wide transition-all duration-200 ease-in-out"
+          disabled={!currentUnit.name || isLoading}
+          className="w-full text-white h-12 text-sm font-normal tracking-wide transition-all duration-200 ease-in-out"
         >
-          生成する
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              生成中...
+            </>
+          ) : (
+            '生成する'
+          )}
         </Button>
       </div>
-      {responseText && (
+
+      {/* {response.answer && (
         <div className="mt-4 p-4 border rounded-lg">
-          <h2 className="text-2xl font-extralight tracking-tight mb-4">
+          <h2 className="text-2xl tracking-tight mb-4">
             生成された問題
           </h2>
-          <pre className="whitespace-pre-wrap">{responseText}</pre>
+          <pre className="whitespace-pre-wrap">{response.answer}</pre>
         </div>
-      )}
-    </div>
+      )} */}
+    </>
   )
 }
 
