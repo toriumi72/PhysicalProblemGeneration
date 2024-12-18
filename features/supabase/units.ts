@@ -7,6 +7,5 @@ export async function getUnits() {
   if (error) {
     throw new Error(error.message)
   }
-
   return data
 } 

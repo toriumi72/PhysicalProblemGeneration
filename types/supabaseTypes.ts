@@ -225,72 +225,79 @@ export type Database = {
           },
         ]
       }
-      problem_hints: {
+      problem_units: {
         Row: {
-          created_at: string | null
-          hint_order: number
-          hint_text: string
-          id: number
-          problem_id: number | null
-          updated_at: string | null
+          problem_id: number
+          unit_id: number
         }
         Insert: {
-          created_at?: string | null
-          hint_order: number
-          hint_text: string
-          id?: number
-          problem_id?: number | null
-          updated_at?: string | null
+          problem_id: number
+          unit_id: number
         }
         Update: {
-          created_at?: string | null
-          hint_order?: number
-          hint_text?: string
-          id?: number
-          problem_id?: number | null
-          updated_at?: string | null
+          problem_id?: number
+          unit_id?: number
         }
         Relationships: [
           {
-            foreignKeyName: "problem_hints_problem_id_fkey"
+            foreignKeyName: "problem_units_problem_id_fkey"
             columns: ["problem_id"]
             isOneToOne: false
             referencedRelation: "problems"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "problem_units_unit_id_fkey"
+            columns: ["unit_id"]
+            isOneToOne: false
+            referencedRelation: "units"
             referencedColumns: ["id"]
           },
         ]
       }
       problems: {
         Row: {
-          answer_text: string
           created_at: string | null
           difficulty_id: number | null
+          final_answer_equation: string
+          final_answer_text: string
           generation_request_id: number | null
-          hints_count: number
+          hints: string[]
           id: number
           question_text: string
+          question_title: string
+          step_explanations: string[]
+          step_titles: string[]
           unit_id: number | null
           updated_at: string | null
         }
         Insert: {
-          answer_text: string
           created_at?: string | null
           difficulty_id?: number | null
+          final_answer_equation: string
+          final_answer_text: string
           generation_request_id?: number | null
-          hints_count?: number
+          hints: string[]
           id?: number
           question_text: string
+          question_title: string
+          step_explanations: string[]
+          step_titles: string[]
           unit_id?: number | null
           updated_at?: string | null
         }
         Update: {
-          answer_text?: string
           created_at?: string | null
           difficulty_id?: number | null
+          final_answer_equation?: string
+          final_answer_text?: string
           generation_request_id?: number | null
-          hints_count?: number
+          hints?: string[]
           id?: number
           question_text?: string
+          question_title?: string
+          step_explanations?: string[]
+          step_titles?: string[]
           unit_id?: number | null
           updated_at?: string | null
         }
@@ -406,13 +413,6 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: [
-          {
-            foreignKeyName: "user_problem_attempts_problem_id_fkey"
-            columns: ["problem_id"]
-            isOneToOne: false
-            referencedRelation: "problems"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "user_problem_attempts_user_id_fkey"
             columns: ["user_id"]
@@ -624,3 +624,22 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
+
+export interface DifyResponse {
+  id: string;
+  question: {
+    title: string;
+    text: string;
+  };
+  answer: {
+    steps: {
+      step_n: string;
+      explanation_step_n: string;
+    }[];
+    final_answer: {
+      text: string;
+      equation: string;
+    };
+  };
+  hints: string[];
+}

@@ -170,7 +170,40 @@ CREATE TABLE public.api_logs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
-・トリガー設定
+--========================================
+-- problems
+--========================================
+CREATE TABLE public.problems (
+  id BIGSERIAL PRIMARY KEY,
+  generation_request_id BIGINT REFERENCES public.problem_generation_requests (id) ON DELETE SET NULL,
+  unit_id BIGINT REFERENCES public.units (id),
+  difficulty_id BIGINT REFERENCES public.difficulties (id),
+  -- question部分
+  question_title TEXT NOT NULL,
+  question_text TEXT NOT NULL,
+  -- answer部分（steps）
+  step_titles TEXT[] NOT NULL CHECK (array_length(step_titles, 1) = 3),
+  step_explanations TEXT[] NOT NULL CHECK (array_length(step_explanations, 1) = 3),
+  -- answer部分（final_answer）
+  final_answer_text TEXT NOT NULL,
+  final_answer_equation TEXT NOT NULL,
+  -- hints部分
+  hints TEXT[] NOT NULL CHECK (array_length(hints, 1) = 3),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+--========================================
+-- problem_units
+-- 中間テーブルを新規作成して、problems と units を紐づける
+--========================================
+CREATE TABLE public.problem_units (
+  problem_id BIGINT REFERENCES public.problems (id) ON DELETE CASCADE,
+  unit_id BIGINT REFERENCES public.units (id) ON DELETE CASCADE,
+  PRIMARY KEY (problem_id, unit_id)
+);
+
+-- トリガー設定
 --========================================
 -- トリガー関数の作成
 CREATE OR REPLACE FUNCTION public.handle_new_auth_user()

@@ -15,7 +15,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
-
+import { addProblem } from '@/features/supabase/problems'
+import { createClient } from '@/utils/supabase/client'
 
 interface Unit {
   id: number
@@ -58,14 +59,38 @@ export default function ProblemGenerator({ units }: { units: Unit[] | null }) {
         }
 
         const data = await res.json();
-        resolve(data);
         
+        // テストデータの作成
+        const problemData: Database['public']['Tables']['problems']['Insert'] = {
+          unit_id: currentUnit.id,
+          difficulty_id: 1,
+          question_title: data.question.title,
+          question_text: data.question.text,
+          step_titles: data.answer.steps.map((step: any) => step.step_n),
+          step_explanations: data.answer.steps.map((step: any) => step.explanation_step_n),
+          final_answer_text: data.answer.final_answer.text,
+          final_answer_equation: data.answer.final_answer.equation,
+          hints: data.hints,
+        }
+
+        // addProblem関数を使用してDBに保存
+        try {
+          await addProblem(problemData);
+        } catch (error) {
+          console.error('DB保存エラー:', error);
+          reject(new Error('データベースへの保存に失敗しました'));
+          return;
+        }
+
+        resolve(data);
         setResponse({
           id: data.id,
           answer: data.answer,
         });
 
-        router.push(`/generate/${data.id}?id=${data.id}&answer=${data.answer}`);
+        // URLパラメータとしてJSONを渡す前にエンコード
+        const encodedAnswer = encodeURIComponent(JSON.stringify(data));
+        router.push(`/generate/${data.id}?id=${data.id}&answer=${encodedAnswer}`);
 
       } catch (error) {
         reject(error);
