@@ -11,26 +11,46 @@ function formatLatexText(text: string): string {
 
 // JSONレスポンスを整形する関数
 function formatDifyResponse(rawResponse: any) {
-  const parsedAnswer = JSON.parse(rawResponse.answer);
+  let parsedAnswer;
   
-  return {
-    id: rawResponse.id,
-    question: {
-      title: parsedAnswer.question.title,
-      text: formatLatexText(parsedAnswer.question.text)
-    },
-    answer: {
-      steps: parsedAnswer.answer.steps.map((step: any) => ({
-        step_n: step.step_n,
-        explanation_step_n: formatLatexText(step.explanation_step_n)
-      })),
-      final_answer: {
-        text: formatLatexText(parsedAnswer.answer.final_answer.text),
-        equation: formatLatexText(parsedAnswer.answer.final_answer.equation)
+  try {
+    // レスポンスがコードブロックで囲まれているかチェック
+    const answerText = rawResponse.answer;
+    if (answerText.includes('```json')) {
+      // コードブロックから JSON 部分を抽出
+      const jsonMatch = answerText.match(/```json\n([\s\S]*?)\n```/);
+      if (jsonMatch && jsonMatch[1]) {
+        parsedAnswer = JSON.parse(jsonMatch[1]);
+      } else {
+        throw new Error('Invalid JSON format in code block');
       }
-    },
-    hints: parsedAnswer.hints
-  };
+    } else {
+      // 通常の JSON パース
+      parsedAnswer = JSON.parse(answerText);
+    }
+
+    return {
+      id: rawResponse.id,
+      question: {
+        title: parsedAnswer.question.title,
+        text: formatLatexText(parsedAnswer.question.text)
+      },
+      answer: {
+        steps: parsedAnswer.answer.steps.map((step: any) => ({
+          step_n: step.step_n,
+          explanation_step_n: formatLatexText(step.explanation_step_n)
+        })),
+        final_answer: {
+          text: formatLatexText(parsedAnswer.answer.final_answer.text),
+          equation: formatLatexText(parsedAnswer.answer.final_answer.equation)
+        }
+      },
+      hints: parsedAnswer.hints
+    };
+  } catch (error) {
+    console.error('JSON解析エラー:', error);
+    throw new Error('レスポンスの解析に失敗しました');
+  }
 }
 
 export async function POST(req: NextRequest) {
@@ -59,10 +79,11 @@ export async function POST(req: NextRequest) {
     }
 
     const data = await response.json();
-    console.log('💩', data)
     
     // レスポンスを整形
     const formattedData = formatDifyResponse(data);
+
+    console.log('💩' + formattedData);
     
     return NextResponse.json(formattedData);
   } catch (error) {
