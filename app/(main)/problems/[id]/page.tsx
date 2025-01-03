@@ -1,25 +1,13 @@
-'use client'
-
-import { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
-import 'katex/dist/katex.min.css';
-import { InlineMath } from 'react-katex';
 import { getProblem } from '@/features/supabase/problems'
+import 'katex/dist/katex.min.css'
+import { InlineMath } from 'react-katex'
 
-export default function Page() {
-  const [problem, setProblem] = useState<any>(null);
-  const searchParams = useSearchParams();
-  const id = searchParams.get('id');
-
-  useEffect(() => {
-    async function fetchProblem() {
-      if (id) {
-        const data = await getProblem({ generationRequestId: id });
-        setProblem(data);
-      }
-    }
-    fetchProblem();
-  }, [id]);
+export default async function ProblemPage({
+  params,
+}: {
+  params: { id: string }
+}) {
+  const problem = await getProblem({ id: params.id })
 
   if (!problem) {
     return <div>問題が見つかりませんでした。</div>
@@ -70,4 +58,4 @@ export default function Page() {
       </div>
     </div>
   )
-}
+} 

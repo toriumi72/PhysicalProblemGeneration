@@ -15,7 +15,7 @@ import {
 } from "lucide-react"
 
 import { NavMain } from "@/components/nav-main"
-import { NavProjects } from "@/components/nav-projects"
+import { NavProblems } from "@/components/nav-problems"
 import { NavSecondary } from "@/components/nav-secondary"
 import { NavUser } from "@/components/nav-user"
 import {
@@ -87,7 +87,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       { title: "サポート", url: "/support", icon: LifeBuoy },
       { title: "フィードバック", url: "/feedback", icon: Send },
     ],
-    projects: [
+    problems: [
       { name: "Design Engineering", url: "#", icon: Frame },
       { name: "Sales & Marketing", url: "#", icon: PieChart },
       { name: "Travel", url: "#", icon: Map },
@@ -115,7 +115,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
+        <NavProblems problems={data.problems} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

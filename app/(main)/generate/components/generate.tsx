@@ -100,8 +100,11 @@ export default function ProblemGenerator({ units }: { units: Unit[] | null }) {
         });
 
         // URLパラメータとしてJSONを渡す前にエンコード
-        const encodedAnswer = encodeURIComponent(JSON.stringify(data));
-        router.push(`/generate/${data.id}?id=${data.id}&answer=${encodedAnswer}`);
+        // const encodedAnswer = encodeURIComponent(JSON.stringify(data));
+        // router.push(`/generate/${data.id}?id=${data.id}&answer=${encodedAnswer}`);
+
+        // データベースから取得
+        router.push(`/generate/${data.id}?id=${requestData.id}`);
 
       } catch (error) {
         reject(error);

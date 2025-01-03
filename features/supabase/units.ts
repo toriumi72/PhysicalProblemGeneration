@@ -9,3 +9,12 @@ export async function getUnits() {
   }
   return data
 } 
+
+export const getUnit = async (id: string) => {
+  const supabase = await createClient()
+  const { data, error } = await supabase.from('units').select('*').eq('id', id).single()
+  if (error) {
+    throw new Error(error.message)
+  }
+  return data
+}
