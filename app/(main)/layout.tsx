@@ -11,44 +11,33 @@ import { PageTitle } from "@/components/PageTitle";
 import Header from "@/components/Header";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
-
+import { useUser } from "@/contexts/UserContext";
+import { getProblems } from "@/features/supabase/problems";
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
 //   : "http://localhost:3000";
 
-// export const metadata = {
-//   metadataBase: new URL(defaultUrl),
-//   title: "Next.js and Supabase Starter Kit",
-//   description: "The fastest way to build apps with Next.js and Supabase",
-// };
 
 export default function Layout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [user, setUser] = useState<{ name: string; email: string; avatar: string } | null>(null)
+  // グローバル変数からユーザー情報を取得
+  const user = useUser();
+  const [problems, setProblems] = useState([])
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const supabase = createClient()
-      const { data, error } = await supabase.auth.getUser()
-      if (data && data.user) {
-        setUser({
-          name: data.user.user_metadata.full_name || "userName",
-          email: data.user.email || "userEmail",
-          avatar: data.user.user_metadata.avatar_url || "/avatars/default.jpg",
-        })
-      } else {
-        console.error("ユーザー情報の取得に失敗しました:", error)
-      }
+    const fetchProblems = async () => {
+      const problems = await getProblems(user.id)
+      setProblems(problems)
     }
+    fetchProblems()
+  }, [user.id])
 
-    fetchUser()
-  }, [])
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={user} problems={problems} />
       <SidebarInset>
         <Header />
         <div className="p-4 pt-16">

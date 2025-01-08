@@ -1,8 +1,24 @@
+'use client'
+
 import { getProblems } from '@/features/supabase/problems'
 import CreatedProblem from './components/CreatedProblem'
+import { useUser } from '@/contexts/UserContext'
+import { useEffect, useState, useCallback } from 'react'
 
-export default async function Page() {
-  const problems = await getProblems()
+export default function Page() {
+  const user = useUser()
+  const [problems, setProblems] = useState([])
+
+  const refreshProblems = useCallback(async () => {
+    if (user.id) {
+      const updatedProblems = await getProblems(user.id)
+      setProblems(updatedProblems)
+    }
+  }, [user.id])
+
+  useEffect(() => {
+    refreshProblems()
+  }, [refreshProblems])
 
   return (
     <div className="">
@@ -15,6 +31,7 @@ export default async function Page() {
             title={problem.question_title}
             unitName={problem.units?.name || '不明な単元'}
             description={problem.question_text}
+            onDelete={refreshProblems}
           />
         ))}
       </div>

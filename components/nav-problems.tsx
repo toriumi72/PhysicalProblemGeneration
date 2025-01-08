@@ -27,33 +27,25 @@ import {
 import { Button } from "@/components/ui/button"
 import { getProblems } from "@/features/supabase/problems"
 import { useEffect, useState } from "react"
-
+import { useUser } from "@/contexts/UserContext"
 //型を後で定義する（supabaseのやつでいいね）
 
 
 export function NavProblems({
+  problems,
 }: {
+  problems: any
 }) {
-  const { isMobile } = useSidebar()
-  const [problems, setProblems] = useState([])
-
-  useEffect(() => {
-    const fetchProblems = async () => {
-      const problems = await getProblems()
-      setProblems(problems)
-    }
-    fetchProblems()
-  }, [])
-
-  console.log(problems)
 
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Problems</SidebarGroupLabel>
       <SidebarMenu>
-        {problems.map((item) => (
+        {/* 🥸 ページ遷移した時にリロードしてしまうの問題を修正する */}
+        {/* {problems.map((item: any) => (
           <Button key={item.id}>{item.id}</Button>
-        ))}
+        ))} */}
+        <div className="text-sm text-red-600">💩ページ遷移した時にリロードしてしまうの問題を修正する💩</div>
         <SidebarMenuItem>
           <SidebarMenuButton>
             <MoreHorizontal />

@@ -6,6 +6,9 @@ import { Bot, MoreVertical } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Edit, Copy, Trash } from 'lucide-react'
 import Link from "next/link"
+import { deleteProblem } from "@/features/supabase/problems"
+import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 interface CreatedProblem {
   id: number
@@ -13,6 +16,7 @@ interface CreatedProblem {
   title: string
   unitName: string
   description?: string
+  onDelete?: () => void
 }
 
 export default function CreatedProblem({ 
@@ -20,8 +24,10 @@ export default function CreatedProblem({
   createdAt, 
   title, 
   unitName, 
-  description 
+  description,
+  onDelete
 }: CreatedProblem) {
+  const router = useRouter()
   
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -33,6 +39,26 @@ export default function CreatedProblem({
 
   const handleDropdownClick = (e: React.MouseEvent) => {
     e.preventDefault()
+  }
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault()
+    
+    const deletePromise = new Promise(async (resolve, reject) => {
+      try {
+        await deleteProblem(id)
+        onDelete?.()
+        resolve('削除が完了しました')
+      } catch (error) {
+        reject(error)
+      }
+    })
+
+    toast.promise(deletePromise, {
+      loading: '削除中...',
+      success: '問題を削除しました',
+      error: 'エラーが発生しました'
+    })
   }
 
   return (
@@ -63,13 +89,12 @@ export default function CreatedProblem({
                 <Edit className="mr-2 h-4 w-4" />
                 <span>編集</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDropdownClick}>
-                <Copy className="mr-2 h-4 w-4" />
-                <span>複製</span>
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={handleDropdownClick}>
-                <Trash className="mr-2 h-4 w-4 text-red-500" />
-                <span className="text-red-500">削除</span>
+              <DropdownMenuItem 
+                onClick={handleDelete}
+                className="text-red-500 focus:text-red-500"
+              >
+                <Trash className="mr-2 h-4 w-4" />
+                <span>削除</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

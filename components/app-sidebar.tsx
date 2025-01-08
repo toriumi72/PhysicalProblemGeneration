@@ -29,12 +29,14 @@ import {
 } from "@/components/ui/sidebar"
 import { createClient } from "@/utils/supabase/client"
 import { useEffect, useState } from "react"
+import { getProblems } from "@/features/supabase/problems"
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const user = {
-    name: "userName",
-    email: "userEmail",
-    avatar: "/avatars/default.jpg",
+export function AppSidebar({ user, problems, ...props }: React.ComponentProps<typeof Sidebar>) {
+
+  const userData = {
+    name: user.email || "userName",
+    email: user.email || "userEmail",
+    avatar: user.avatar || "/avatars/default.jpg",
   }
 
   const data = {
@@ -115,11 +117,11 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProblems problems={data.problems} />
+        <NavProblems problems={problems} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-      <NavUser user={user} />
+      <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   )
