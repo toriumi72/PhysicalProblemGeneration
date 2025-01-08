@@ -51,7 +51,7 @@ export default function Page() {
         </div>
       </Card>
 
-      <Accordion type="single" collapsible className="w-full">
+      <Accordion type="multiple" className="w-full">
         <AccordionItem value="hint1">
           <AccordionTrigger>ヒント1</AccordionTrigger>
           <AccordionContent>
