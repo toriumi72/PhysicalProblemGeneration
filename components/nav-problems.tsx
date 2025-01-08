@@ -1,3 +1,5 @@
+"use client"
+
 import {
   Folder,
   MoreHorizontal,
@@ -24,14 +26,25 @@ import {
 } from "@/components/ui/sidebar"
 import { Button } from "@/components/ui/button"
 import { getProblems } from "@/features/supabase/problems"
+import { useEffect, useState } from "react"
 
-export async function NavProblems({
+//型を後で定義する（supabaseのやつでいいね）
+
+
+export function NavProblems({
 }: {
 }) {
   const { isMobile } = useSidebar()
+  const [problems, setProblems] = useState([])
 
-  // 問題一覧を取得する関数を一旦使っている
-  const problems = await getProblems()
+  useEffect(() => {
+    const fetchProblems = async () => {
+      const problems = await getProblems()
+      setProblems(problems)
+    }
+    fetchProblems()
+  }, [])
+
   console.log(problems)
 
   return (
@@ -39,7 +52,7 @@ export async function NavProblems({
       <SidebarGroupLabel>Problems</SidebarGroupLabel>
       <SidebarMenu>
         {problems.map((item) => (
-          <Button key={item.name}>{item.name}</Button>
+          <Button key={item.id}>{item.id}</Button>
         ))}
         <SidebarMenuItem>
           <SidebarMenuButton>
