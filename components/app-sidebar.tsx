@@ -34,7 +34,7 @@ import { getProblems } from "@/features/supabase/problems"
 export function AppSidebar({ user, problems, ...props }: React.ComponentProps<typeof Sidebar>) {
 
   const userData = {
-    name: user.email || "userName",
+    name: user.display_name || "userName",
     email: user.email || "userEmail",
     avatar: user.avatar || "/avatars/default.jpg",
   }

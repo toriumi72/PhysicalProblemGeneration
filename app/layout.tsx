@@ -36,6 +36,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     created_at: data?.user?.created_at ?? "",
     updated_at: data?.user?.updated_at ?? "",
     is_anonymous: data?.user?.is_anonymous ?? false,
+    display_name: data?.user?.user_metadata?.display_name ?? "",
   }
 
   return (

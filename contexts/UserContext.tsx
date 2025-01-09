@@ -11,7 +11,8 @@ export interface User {
   last_sign_in_at: string,
   created_at: string,
   updated_at: string,
-  is_anonymous: boolean
+  is_anonymous: boolean,
+  display_name: string,
 }
 
 // デフォルト値を持つUserContextを作成
@@ -24,6 +25,7 @@ export const UserContext = createContext<User>({
   created_at: '',
   updated_at: '',
   is_anonymous: false,
+  display_name: '',
 })
 
 // カスタムフックでUserContextを利用しやすくする
