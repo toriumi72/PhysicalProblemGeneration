@@ -41,10 +41,10 @@ export function NavProblems({
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Problems</SidebarGroupLabel>
       <SidebarMenu>
-        {/* 🥸 ページ遷移した時にリロードしてしまうの問題を修正する */}
-        {/* {problems.map((item: any) => (
+        {/* 🥸 ページ遷移した時にリロードしてしまう問題を修正する */}
+        {problems.map((item: any) => (
           <Button key={item.id}>{item.id}</Button>
-        ))} */}
+        ))}
         <div className="text-sm text-red-600">💩ページ遷移した時にリロードしてしまうの問題を修正する💩</div>
         <SidebarMenuItem>
           <SidebarMenuButton>
