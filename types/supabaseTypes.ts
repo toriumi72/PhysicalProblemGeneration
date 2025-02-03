@@ -131,21 +131,21 @@ export type Database = {
           created_at: string | null
           id: number
           level_name: string
-          parameters: Json | null
+          parameters: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
           id?: number
           level_name: string
-          parameters?: Json | null
+          parameters?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
           id?: number
           level_name?: string
-          parameters?: Json | null
+          parameters?: string | null
           updated_at?: string | null
         }
         Relationships: []
@@ -624,22 +624,3 @@ export type CompositeTypes<
   : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
     ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
     : never
-
-export interface DifyResponse {
-  id: string;
-  question: {
-    title: string;
-    text: string;
-  };
-  answer: {
-    steps: {
-      step_n: string;
-      explanation_step_n: string;
-    }[];
-    final_answer: {
-      text: string;
-      equation: string;
-    };
-  };
-  hints: string[];
-}
