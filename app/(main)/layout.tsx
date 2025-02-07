@@ -12,6 +12,7 @@ import Header from "@/components/Header";
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { useUser } from "@/contexts/UserContext";
+import { useProblems } from "@/contexts/ProblemsContext";
 import { getProblems } from "@/features/supabase/problems";
 // const defaultUrl = process.env.VERCEL_URL
 //   ? `https://${process.env.VERCEL_URL}`
@@ -25,15 +26,7 @@ export default function Layout({
 }) {
   // グローバル変数からユーザー情報を取得
   const user = useUser();
-  const [problems, setProblems] = useState([])
-
-  useEffect(() => {
-    const fetchProblems = async () => {
-      const problems = await getProblems(user.id)
-      setProblems(problems)
-    }
-    fetchProblems()
-  }, [user.id])
+  const problems = useProblems();
 
   return (
     <SidebarProvider>

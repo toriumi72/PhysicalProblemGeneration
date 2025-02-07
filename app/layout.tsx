@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { ReactNode } from 'react'
 import { UserContext, User } from '@/contexts/UserContext'
 import UserProvider from '@/components/providers/UserProvider'
+import ProblemsProvider from '@/components/providers/ProblemsProvider'
+import { getProblems } from "@/features/supabase/problems";
 
 type RootLayoutProps = {
   children: ReactNode
@@ -39,11 +41,16 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     display_name: data?.user?.user_metadata?.display_name ?? "",
   }
 
+  const problems = await getProblems(user.id)
+
+
   return (
     <html lang="ja" className={GeistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
         <UserProvider user={user}>
-          <main>{children}</main>
+          <ProblemsProvider problems={problems}>
+            <main>{children}</main>
+          </ProblemsProvider>
           <Toaster richColors closeButton />
         </UserProvider>
       </body>

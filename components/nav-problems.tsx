@@ -36,7 +36,6 @@ export function NavProblems({
 }: {
   problems: any
 }) {
-
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Problems</SidebarGroupLabel>
