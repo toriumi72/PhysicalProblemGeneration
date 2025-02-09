@@ -1,5 +1,7 @@
+import UnderConstruction from "@/components/underConstruction"
+
 export default function Page() {
   return (
-    <h1>Hello support</h1>
+    <UnderConstruction />
   )
 }

@@ -30,6 +30,8 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { signOutAction } from "@/app/actions"
+import { useRouter } from "next/navigation"
+import Link from "next/link"
 
 export function NavUser({
   user,
@@ -41,6 +43,7 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
 
   return (
     <SidebarMenu>
@@ -82,10 +85,12 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
+              <Link href="/upgradeToPro" legacyBehavior>
+                <DropdownMenuItem>
+                  <Sparkles />
+                  Upgrade to Pro
+                </DropdownMenuItem>
+              </Link>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>

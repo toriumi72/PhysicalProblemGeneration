@@ -33,7 +33,7 @@ import { useUser } from "@/contexts/UserContext"
 import { Database } from '@/types/supabaseTypes'
 import Link from "next/link"
 import { Badge } from "@/components/ui/badge"
-
+import { usePathname } from "next/navigation"
 
 export function NavProblems({
   problems,
@@ -41,7 +41,9 @@ export function NavProblems({
   problems: Database['public']['Tables']['problems']['Row'][]
 }) {
   const [showAll, setShowAll] = useState(false)
-  const displayProblems = showAll ? problems : problems.slice(0, 4)
+  const displayProblems = showAll ? problems : problems.slice(0, 3)
+
+  const pathname = usePathname().replace(/\/$/, "")
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString)
@@ -51,56 +53,66 @@ export function NavProblems({
     return `${year}.${month}.${day}`
   }
 
-
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Problems</SidebarGroupLabel>
       <SidebarMenu>
-        {displayProblems.map((item: any) => (
-          <Link 
-            key={item.id} 
-            href={`/problems/${item.id}`} 
-            className="w-full"
-          >
-            <Button variant="ghost" className="w-full flex justify-between items-center h-auto text-left p-2">
-              <div className="w-full max-w-full overflow-hidden text-left gap-1">
-                <span className="truncate block w-full text-left">
-                  {item.question_title}
-                </span>
-                <div className="flex justify-between items-center">
-                  <Badge variant="outline" className="text-[10px] font-normal rounded-md mt-1">
-                    {item.units?.name || '不明な単元'}
-                  </Badge>
-                </div>
-                <span className="text-[10px]">
-                  {formatDate(item.created_at)}
-                </span>
-              </div>
-              {/* エラー出るから後で実装する */}
-              {/* <DropdownMenu>
-                <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
-                  <Button variant="ghost" className="h-8 w-8 p-0">
-                    <MoreVertical className="h-4 w-4" />
-                    <span className="sr-only">メニューを開く</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem 
-                    onClick={(e) => {
-                      e.preventDefault()
-                      // TODO: 削除処理を追加
-                    }}
-                    className="text-red-500 focus:text-red-500"
-                  >
-                    <Trash className="mr-2 h-4 w-4" />
-                    <span>削除</span>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu> */}
-            </Button>
-          </Link>
-        ))}
-        {problems.length > 4 && (
+        <div className="max-h-[300px] overflow-y-auto">
+          {displayProblems.map((item: any) => {
+            const itemUrl = `/problems/${item.id}`
+            const isActive = pathname === itemUrl
+
+            return (
+              <Link 
+                key={item.id} 
+                href={itemUrl} 
+                className="w-full"
+              >
+                <Button 
+                  variant="ghost" 
+                  className={`w-full flex justify-between items-center h-auto text-left p-2 ${isActive ? "bg-gray-200" : ""}`}
+                >
+                  <div className="w-full max-w-full overflow-hidden text-left gap-1">
+                    <span className="truncate block w-full text-left">
+                      {item.question_title}
+                    </span>
+                    <div className="flex justify-between items-center">
+                      <Badge variant="outline" className="text-[10px] font-normal rounded-md mt-1">
+                        {item.units?.name || '不明な単元'}
+                      </Badge>
+                    </div>
+                    <span className="text-[10px]">
+                      {formatDate(item.created_at)}
+                    </span>
+                  </div>
+                  {/* エラー出るから後で実装する */}
+                  {/* <DropdownMenu>
+                    <DropdownMenuTrigger asChild onClick={(e) => e.preventDefault()}>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <MoreVertical className="h-4 w-4" />
+                        <span className="sr-only">メニューを開く</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        onClick={(e) => {
+                          e.preventDefault()
+                          // TODO: 削除処理を追加
+                        }}
+                        className="text-red-500 focus:text-red-500"
+                      >
+                        <Trash className="mr-2 h-4 w-4" />
+                        <span>削除</span>
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu> */}
+                </Button>
+              </Link>
+            )
+          })}
+        </div>
+        
+        {problems.length > 3 && (
           <SidebarMenuItem>
             <SidebarMenuButton onClick={() => setShowAll(!showAll)}>
               <MoreHorizontal />
