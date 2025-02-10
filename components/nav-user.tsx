@@ -97,7 +97,7 @@ export function NavUser({
             <DropdownMenuGroup>
               <DropdownMenuItem>
                 <BadgeCheck />
-                Account
+                Account(勉強設定的な)
               </DropdownMenuItem>
               <DropdownMenuItem>
                 <CreditCard />
