@@ -31,15 +31,13 @@ export default function Page() {
     <div className="">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-        <Card className="w-full flex justify-center items-center">
-          <div className="flex flex-col items-start justify-center gap-2 p-4">
-            <Link href="/generate">
-              <Button variant="ghost" size="icon" className="w-full px-4">  
-                <Plus className="h-4 w-4" />
-                <span className="text-xs">新しい問題を作成する</span>
-              </Button>
-            </Link>
-          </div>
+        <Card className="w-full h-full flex justify-center items-center">
+          <Link href="/generate" className="w-full h-full flex justify-center items-center">
+            <Button variant="ghost" size="icon" className="w-full h-full px-4">  
+              <Plus className="h-4 w-4" />
+              <span className="text-xs">新しい問題を作成する</span>
+            </Button>
+          </Link>
         </Card>
 
         {problems.map((problem) => (
