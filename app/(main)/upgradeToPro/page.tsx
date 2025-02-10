@@ -1,10 +1,9 @@
 "use client"
 
 import { Check } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
-
+import CheckoutButton from "@/components/stripe/Checkout"
 export default function PricingTable() {
   return (
     <div className="mx-auto max-w-5xl p-6">
@@ -85,7 +84,11 @@ export default function PricingTable() {
             </ul>
           </CardContent>
           <CardFooter>
-            <Button className="w-full">プロにアップグレード</Button>
+            <CheckoutButton 
+              productId="prod_Rk07U7cc8QpQcw" 
+              buttonText="プロにアップグレード" 
+              className="w-full" 
+            />
           </CardFooter>
         </Card>
       </div>
