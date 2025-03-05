@@ -13,22 +13,17 @@ export interface User {
   updated_at: string,
   is_anonymous: boolean,
   display_name: string,
+  is_pro: boolean, // users テーブルから取得するカスタム情報
 }
 
 // デフォルト値を持つUserContextを作成
-export const UserContext = createContext<User>({
-  id: '',
-  aud: '',
-  role: '',
-  email: '',
-  last_sign_in_at: '',
-  created_at: '',
-  updated_at: '',
-  is_anonymous: false,
-  display_name: '',
-})
+export const UserContext = createContext<User | null>(null)
 
 // カスタムフックでUserContextを利用しやすくする
-export const useUser = (): User => {
-  return useContext(UserContext)
+export function useUser() {
+  const context = useContext(UserContext)
+  if (!context) {
+    throw new Error("useUser は UserProvider 内で使用してください")
+  }
+  return context
 }

@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 import { useEffect, useState } from "react";
 import { ReactNode } from 'react'
 import { UserContext, User } from '@/contexts/UserContext'
-import UserProvider from '@/components/providers/UserProvider'
+import { UserProvider } from '@/components/providers/UserProvider'
 import ProblemsProvider from '@/components/providers/ProblemsProvider'
 import { getProblems } from "@/features/supabase/problems";
 
@@ -47,7 +47,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="ja" className={GeistSans.className} suppressHydrationWarning>
       <body className="bg-background text-foreground">
-        <UserProvider user={user}>
+        <UserProvider initialUser={user}>
           <ProblemsProvider problems={problems}>
             <main>{children}</main>
           </ProblemsProvider>

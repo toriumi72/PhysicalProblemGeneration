@@ -210,7 +210,7 @@ CREATE OR REPLACE FUNCTION public.handle_new_auth_user()
 RETURNS trigger AS $$
 BEGIN
   INSERT INTO public.users (id, display_name)
-  VALUES (NEW.id, NULL); -- 初期はdisplay_nameはNULLにしていますが、必要に応じて設定可能
+  VALUES (NEW.id, NEW.display_name);
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;

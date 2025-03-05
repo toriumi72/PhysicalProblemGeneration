@@ -4,8 +4,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export function BillingSettings() {
+  const router = useRouter()
+
   return (
     <div className="max-w-3xl space-y-6">
       <Card>
@@ -17,7 +21,7 @@ export function BillingSettings() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-medium">Pro プラン</h3>
-              <p className="text-sm text-muted-foreground">¥2,000 / 月</p>
+              <p className="text-sm text-muted-foreground">¥800 / 月</p>
             </div>
             <Badge>現在のプラン</Badge>
           </div>
@@ -28,9 +32,12 @@ export function BillingSettings() {
           </ul>
           <div className="flex space-x-4">
             <Button variant="outline">プランを変更</Button>
-            <Button variant="outline" className="text-destructive">
-              プランを解約
-            </Button>
+            <Link
+              href="/settings/subscription/cancel"
+              className="text-destructive"
+            >
+              <Button variant="outline">プランを解約</Button>
+            </Link>
           </div>
         </CardContent>
       </Card>

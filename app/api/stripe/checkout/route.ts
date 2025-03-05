@@ -71,7 +71,6 @@ export async function POST(request: Request) {
       payment_method_types: ['card'],
       line_items: [
         {
-          // 固定の価格IDを使用（もしくはproductIdなどを利用して動的に設定）
           price: 'price_1QqW6nQ3ZMuN4zzeqLPvdU4j',
           quantity: 1,
         },

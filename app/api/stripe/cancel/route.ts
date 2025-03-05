@@ -16,7 +16,7 @@ export async function POST(request: Request) {
       );
     }
 
-    // サブスクリプションを解約
+    // サブスクリプションをキャンセル（解約）する処理
     const subscription = await stripe.subscriptions.cancel(subscriptionId);
 
     return NextResponse.json({ subscription });
