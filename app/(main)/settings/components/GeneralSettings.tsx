@@ -6,10 +6,35 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Upload } from "lucide-react"
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Separator } from "@/components/ui/separator"
+
+
 export function GeneralSettings() {
-  const [avatar, setAvatar] = useState("/placeholder.svg?height=100&width=100")
+  const [avatar, setAvatar] = useState("")
+  
+  // ファイル入力への参照を作成
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
+  // ファイル選択ダイアログを開く関数
+  const handleAvatarButtonClick = () => {
+    fileInputRef.current?.click()
+  }
+  
+  // ファイルが選択されたときの処理
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      // FileReaderを使用して画像をData URLに変換
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        if (e.target?.result) {
+          setAvatar(e.target.result as string)
+        }
+      }
+      reader.readAsDataURL(file)
+    }
+  }
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -24,10 +49,24 @@ export function GeneralSettings() {
               <AvatarImage src={avatar} />
               <AvatarFallback>ユ</AvatarFallback>
             </Avatar>
-            <Button variant="outline" className="flex items-center gap-2">
-              <Upload className="h-4 w-4" />
-              画像を変更
-            </Button>
+            <div>
+              {/* 非表示のファイル入力 */}
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="image/*"
+                className="hidden"
+              />
+              <Button 
+                variant="outline" 
+                className="flex items-center gap-2"
+                onClick={handleAvatarButtonClick}
+              >
+                <Upload className="h-4 w-4" />
+                画像を変更
+              </Button>
+            </div>
           </div>
           <div className="grid gap-4 sm:grid-rows-2">
             <div className="space-y-2">

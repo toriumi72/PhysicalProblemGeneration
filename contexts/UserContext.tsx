@@ -14,7 +14,7 @@ export interface User {
   is_anonymous: boolean,
   display_name: string,
   is_pro: boolean,
-  avatar: string,
+  avatar_url: string,
 }
 
 // デフォルト値を持つUserContextを作成
