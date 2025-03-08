@@ -13,7 +13,8 @@ export interface User {
   updated_at: string,
   is_anonymous: boolean,
   display_name: string,
-  is_pro: boolean, // users テーブルから取得するカスタム情報
+  is_pro: boolean,
+  avatar: string,
 }
 
 // デフォルト値を持つUserContextを作成

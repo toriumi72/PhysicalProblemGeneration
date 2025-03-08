@@ -30,8 +30,15 @@ import {
 import { createClient } from "@/utils/supabase/client"
 import { useEffect, useState } from "react"
 import { getProblems } from "@/features/supabase/problems"
+import { User } from "@/contexts/UserContext"
+import { Database } from '@/types/supabaseTypes'
 
-export function AppSidebar({ user, problems, ...props }: React.ComponentProps<typeof Sidebar>) {
+type Props = {
+  user: User;
+  problems: Database['public']['Tables']['problems']['Row'][];
+}
+
+export function AppSidebar({ user, problems, ...props }: Props) {
 
   const userData = {
     name: user.display_name || "userName",

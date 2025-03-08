@@ -29,7 +29,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     data,
   } = await supabase.auth.getUser();
 
-  const user: User = {
+  const user = {
     id: data?.user?.id ?? "",
     aud: data?.user?.aud ?? "",
     role: data?.user?.role ?? "",
@@ -39,7 +39,11 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     updated_at: data?.user?.updated_at ?? "",
     is_anonymous: data?.user?.is_anonymous ?? false,
     display_name: data?.user?.user_metadata?.display_name ?? "",
+    is_pro: data?.user?.user_metadata?.is_pro ?? false,
+    avatar: data?.user?.user_metadata?.avatar ?? "",
   }
+
+  console.log(user)
 
   const problems = await getProblems(user.id)
 
