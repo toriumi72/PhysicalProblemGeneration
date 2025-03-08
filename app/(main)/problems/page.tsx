@@ -37,7 +37,7 @@ export default function Page() {
     <div className="">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
 
-        <Card className="w-full h-full flex justify-center items-center">
+        <Card className="w-full h-full flex justify-center items-center min-h-20">
           <Link href="/generate" className="w-full h-full flex justify-center items-center">
             <Button variant="ghost" size="icon" className="w-full h-full px-4">  
               <Plus className="h-4 w-4" />
