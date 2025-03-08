@@ -425,24 +425,42 @@ export type Database = {
       user_settings: {
         Row: {
           created_at: string | null
+          daily_goal_problems: number | null
           default_difficulty_id: number | null
+          email_notifications: boolean | null
           id: number
+          monthly_problem_limit: number | null
+          monthly_problems_generated: number | null
+          push_notifications: boolean | null
           updated_at: string | null
           user_id: string | null
+          weak_units: number[] | null
         }
         Insert: {
           created_at?: string | null
+          daily_goal_problems?: number | null
           default_difficulty_id?: number | null
+          email_notifications?: boolean | null
           id?: number
+          monthly_problem_limit?: number | null
+          monthly_problems_generated?: number | null
+          push_notifications?: boolean | null
           updated_at?: string | null
           user_id?: string | null
+          weak_units?: number[] | null
         }
         Update: {
           created_at?: string | null
+          daily_goal_problems?: number | null
           default_difficulty_id?: number | null
+          email_notifications?: boolean | null
           id?: number
+          monthly_problem_limit?: number | null
+          monthly_problems_generated?: number | null
+          push_notifications?: boolean | null
           updated_at?: string | null
           user_id?: string | null
+          weak_units?: number[] | null
         }
         Relationships: [
           {
@@ -455,7 +473,7 @@ export type Database = {
           {
             foreignKeyName: "user_settings_user_id_fkey"
             columns: ["user_id"]
-            isOneToOne: false
+            isOneToOne: true
             referencedRelation: "users"
             referencedColumns: ["id"]
           },
@@ -482,32 +500,28 @@ export type Database = {
             referencedRelation: "units"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "user_settings_preferred_units_user_settings_id_fkey"
-            columns: ["user_settings_id"]
-            isOneToOne: false
-            referencedRelation: "user_settings"
-            referencedColumns: ["id"]
-          },
         ]
       }
       users: {
         Row: {
           created_at: string | null
-          display_name: string | null
           id: string
+          is_pro: boolean | null
+          stripe_customer_id: string | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string | null
-          display_name?: string | null
           id: string
+          is_pro?: boolean | null
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string | null
-          display_name?: string | null
           id?: string
+          is_pro?: boolean | null
+          stripe_customer_id?: string | null
           updated_at?: string | null
         }
         Relationships: []
