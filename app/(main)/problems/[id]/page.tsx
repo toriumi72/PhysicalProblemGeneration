@@ -2,14 +2,14 @@ import { getProblem } from '@/features/supabase/problems'
 import 'katex/dist/katex.min.css'
 import { InlineMath } from 'react-katex'
 
-type Props = {
-  params: Promise<{ id: string }>
-}
+// type Props = {
+//   params: Promise<{ id: string }>
+// }
 
 export default async function ProblemPage({ 
   params
 }: {
-  params: Props;
+  params: Promise<{ id: string }>
 }) {
   const problem = await getProblem({ id: params.id })
 
