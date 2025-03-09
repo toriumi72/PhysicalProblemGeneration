@@ -5,16 +5,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Upload } from "lucide-react"
+import { Upload, Loader2 } from "lucide-react"
 import { useState, useRef } from "react"
 import { Separator } from "@/components/ui/separator"
-
+import { useUser } from "@/contexts/UserContext"
+import { toast } from "sonner"
+import { uploadUserAvatar, updateUserAvatar, updateUserData } from "@/features/supabase/users"
 
 export function GeneralSettings() {
-  const [avatar, setAvatar] = useState("")
-  
-  // ファイル入力への参照を作成
+  const user = useUser()
+  const [avatar, setAvatar] = useState(user.avatar || "/placeholder.svg?height=100&width=100")
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const nameInputRef = useRef<HTMLInputElement>(null)
   
   // ファイル選択ダイアログを開く関数
   const handleAvatarButtonClick = () => {
@@ -24,17 +28,71 @@ export function GeneralSettings() {
   // ファイルが選択されたときの処理
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
-    if (file) {
-      // FileReaderを使用して画像をData URLに変換
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        if (e.target?.result) {
-          setAvatar(e.target.result as string)
-        }
+    if (!file) return
+    
+    // ファイルを状態に保存
+    setSelectedFile(file)
+    
+    // ファイルをプレビュー表示用にData URLとして読み込む
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      if (e.target?.result) {
+        setAvatar(e.target.result as string)
       }
-      reader.readAsDataURL(file)
     }
+    reader.readAsDataURL(file)
   }
+  
+  // 変更を保存するときの処理
+  const handleSaveChanges = async () => {
+    setIsUploading(true);
+
+    try {
+      // 変更内容を格納するオブジェクト
+      const updates: Record<string, any> = {};
+      
+      // 名前の変更を確認
+      const newName = nameInputRef.current?.value;
+      if (newName && newName !== user.display_name) {
+        updates.display_name = newName;
+      }
+      
+      // アバター画像の変更があれば処理
+      if (selectedFile) {
+        // アバター画像をアップロード
+        const avatarUrl = await uploadUserAvatar(user.id, selectedFile, user.avatar);
+        updates.avatar = avatarUrl;
+      }
+      
+      // 何か変更があれば更新
+      if (Object.keys(updates).length > 0) {
+        // 全ての変更をまとめて一度に更新
+        await updateUserData(updates);
+        toast.success('プロフィール情報が更新されました');
+        
+        // ファイル選択をリセット
+        setSelectedFile(null);
+        
+        // 更新が完了したらページをリロード
+        // これによりUserContextも最新の情報に更新される
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000); // トーストメッセージが表示される時間を考慮して少し遅延
+      } else {
+        toast.info('変更はありませんでした');
+      }
+    } catch (error: any) {
+      console.error('更新エラー:', error);
+      toast.error('変更の保存に失敗しました: ' + error.message);
+      
+      // エラー時は元の画像に戻す
+      if (selectedFile) {
+        setAvatar(user.avatar || "/placeholder.svg?height=100&width=100");
+      }
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   return (
     <div className="max-w-3xl space-y-6">
@@ -66,19 +124,30 @@ export function GeneralSettings() {
                 <Upload className="h-4 w-4" />
                 画像を変更
               </Button>
+              {selectedFile && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {selectedFile.name} が選択されています
+                </p>
+              )}
             </div>
           </div>
-          <div className="grid gap-4 sm:grid-rows-2">
+          <div className="gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">表示名</Label>
-              <Input id="name" defaultValue="ユーザー名" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">メールアドレス</Label>
-              <Input id="email" type="email" defaultValue="user@example.com" />
+              <Input id="name" defaultValue={user.display_name} ref={nameInputRef} />
             </div>
           </div>
-          <Button>変更を保存</Button>
+          <Button 
+            onClick={handleSaveChanges} 
+            disabled={isUploading}
+          >
+            {isUploading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                保存中...
+              </>
+            ) : '変更を保存'}
+          </Button>
         </CardContent>
       </Card>
 

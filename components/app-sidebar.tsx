@@ -43,7 +43,7 @@ export function AppSidebar({ user, problems, ...props }: Props) {
   const userData = {
     name: user.display_name || "userName",
     email: user.email || "userEmail",
-    avatar_url: user.avatar_url || "/avatars/default.jpg",
+    avatar: user.avatar || "/avatars/default.jpg",
   }
 
   const data = {

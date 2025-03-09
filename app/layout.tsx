@@ -40,7 +40,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
     is_anonymous: data?.user?.is_anonymous ?? false,
     display_name: data?.user?.user_metadata?.display_name ?? "",
     is_pro: data?.user?.user_metadata?.is_pro ?? false,
-    avatar_url: data?.user?.user_metadata?.avatar_url ?? "",
+    avatar: data?.user?.user_metadata?.avatar ?? "",
   }
 
   console.log(user)
